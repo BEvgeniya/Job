@@ -30,20 +30,19 @@ def predict_rub_salary_hh(vacance):
 def predict_rub_salary_for_sj(vacance):
     s_from = vacance['payment_from']
     s_to = vacance['payment_to']
-    if s_from == 0:
+    if not s_from:
         s_from = None
-    if s_to == 0:
+    if not s_to:
         s_to = None
     return predict_salary(s_from, s_to)
 
 
-def parse_hh_vacancies(jobs):
+def parse_hh_vacancies(languages):
     base_url = 'https://api.hh.ru/vacancies'
     headers = {
         'User-Agent': 'curl',
     }
-
-    languages = list(jobs.keys())
+    jobs = {}
 
     for language in languages:
         params = {
@@ -87,9 +86,9 @@ def parse_hh_vacancies(jobs):
     return jobs
 
 
-def parse_sj_vacancies(jobs):
-    languages = list(jobs.keys())
+def parse_sj_vacancies(languages):
     sj_api_token = os.getenv['SJ_API_TOKEN']
+    jobs = {}
     for language in languages:
 
         super_job_url = 'https://api.superjob.ru/2.0/vacancies'
@@ -154,25 +153,17 @@ def create_table(jobs, title):
 
 
 def main():
-    jobs = {
-        'Java': '',
-        'Python': '',
-        'Javascript': '',
-        'PHP': '',
-        'C++': '',
-        'C#': '',
-        'C': '',
-        'Go': '',
-        'Swift': ''
-    }
+    languages = ['Java', 'Python', 'Javascript', 'PHP', 'C++', 'C#', 'C', 'Go', 'Swift']
+
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
 
-    jobs = parse_hh_vacancies(jobs)
+    jobs = parse_hh_vacancies(languages)
     create_table(jobs, title_hh)
 
-    jobs = parse_sj_vacancies(jobs)
+    jobs = parse_sj_vacancies(languages)
     create_table(jobs, title_sj)
+
 
 
 if __name__ == '__main__':
