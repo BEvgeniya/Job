@@ -18,11 +18,10 @@ def predict_salary(s_from, s_to):
 def predict_rub_salary_hh(vacance):
     salary = vacance['salary']
     predicted_salary = None
-    if salary:
+    if salary and salary['currency'] == 'RUR':
         s_from = salary['from']
         s_to = salary['to']
-        if salary['currency'] == 'RUR':
-            predicted_salary = predict_salary(s_from, s_to)
+        predicted_salary = predict_salary(s_from, s_to)
 
     return predicted_salary
 
