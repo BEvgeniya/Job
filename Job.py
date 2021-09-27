@@ -56,7 +56,7 @@ def parse_hh_vacancies(languages):
 
         }
         all_salaries = 0
-        vacancies_processed = 1
+        vacancies_processed = 0
 
         page = 0
         count_pages = 1000
@@ -77,11 +77,11 @@ def parse_hh_vacancies(languages):
                 if predicted_salary:
                     vacancies_processed += 1
                     all_salaries += predicted_salary
-            average_salary = int(all_salaries / vacancies_processed)
+            average_salary = int(all_salaries / (vacancies_processed if vacancies_processed else 1))
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
-            'vacancies_processed': vacancies_processed-1,
+            'vacancies_processed': vacancies_processed,
             'average_salary': average_salary
         }
     return jobs
@@ -91,7 +91,7 @@ def parse_sj_vacancies(languages):
     catalogues_code = '48'
     town_code = '4'
     sj_api_token = os.getenv['SJ_API_TOKEN']
-   
+    
 
     jobs = {}
     for language in languages:
@@ -111,7 +111,7 @@ def parse_sj_vacancies(languages):
         }
 
         all_salaries = 0
-        vacancies_processed = 1
+        vacancies_processed = 0
 
         page = 0
         count_pages = 1000
@@ -132,11 +132,11 @@ def parse_sj_vacancies(languages):
                 if predicted_salary:
                     vacancies_processed += 1
                     all_salaries += predicted_salary
-                average_salary = int(all_salaries / vacancies_processed)
+                average_salary = int(all_salaries / (vacancies_processed if vacancies_processed else 1))
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
-            'vacancies_processed': vacancies_processed - 1,
+            'vacancies_processed': vacancies_processed,
             'average_salary': average_salary
         }
     return jobs
