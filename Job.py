@@ -97,8 +97,7 @@ def parse_language_sj(response):
 def parse_sj_vacancies(languages):
     catalogues_code = '48'
     town_code = '4'
-    #sj_api_token = os.getenv['SJ_API_TOKEN']
-    sj_api_token = 'v3.r.13306754.e8a34219dab342767e97d052a2b95bcf439d0f50.48974001934ce626c8889b6ce795fe8d9bf4f1b3'
+    sj_api_token = os.getenv['SJ_API_TOKEN']
     super_job_url = 'https://api.superjob.ru/2.0/vacancies'
     headers = {
         'X-Api-App-Id': sj_api_token,
@@ -129,7 +128,6 @@ def parse_sj_vacancies(languages):
 
             count_pages = round(vacancies_found/20)
 
-
         jobs[language] = {
             'vacancies_found': vacancies_found,
             'vacancies_processed': vacancies_processed,
@@ -151,21 +149,19 @@ def get_average_salary(vacancies, is_hh):
     return vacancies_processed, average_salary
 
 
-
-
 def create_table(jobs, title):
     table_data = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
-    languages = list(jobs.keys())
-    for language in languages:
-        jobs_found = jobs[language]['vacancies_found']
-        jobs_processed = jobs[language]['vacancies_processed']
-        salary = jobs[language]['average_salary']
+
+    for language, statistic in jobs.items():
+        jobs_found = statistic['vacancies_found']
+        jobs_processed = statistic['vacancies_processed']
+        salary = statistic['average_salary']
 
         content_hh = tuple([language, jobs_found, jobs_processed, salary])
         table_data.append(content_hh)
 
     table = AsciiTable(table_data, title)
-    table.justify_columns[len(languages)] = 'right'
+    table.justify_columns[len(jobs)] = 'right'
     print(table.table)
     print()
 
@@ -181,7 +177,6 @@ def main():
 
     jobs = parse_sj_vacancies(languages)
     create_table(jobs, title_sj)
-
 
 
 if __name__ == '__main__':
