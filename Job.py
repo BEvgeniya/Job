@@ -55,22 +55,21 @@ def parse_hh_vacancies(languages):
             'page': '0'
 
         }
-        response = requests.get(base_url, headers=headers, params=params)
-        response.raise_for_status()
-        vacancies = response.json()['items']
-
-        vacancies_found = response.json()['found']
-
-        count_pages = response.json()['pages']
-
         all_salaries = 0
         vacancies_processed = 1
 
-        for page in range(count_pages):
+        page = 0
+        count_pages = 1000
+
+        while page < count_pages:
             params['page'] = page
+            page += 1
             response = requests.get(base_url, headers=headers, params=params)
             response.raise_for_status()
             vacancies = response.json()['items']
+            vacancies_found = response.json()['found']
+
+            count_pages = response.json()['pages']
 
             for vacance in vacancies:
                 predicted_salary = predict_rub_salary_hh(vacance)
@@ -89,8 +88,9 @@ def parse_hh_vacancies(languages):
 
 def parse_sj_vacancies(languages):
     catalogues_code = '48'
-    town_code =  '4'
+    town_code = '4'
     sj_api_token = os.getenv['SJ_API_TOKEN']
+
     jobs = {}
     for language in languages:
 
@@ -108,20 +108,21 @@ def parse_sj_vacancies(languages):
 
         }
 
-        response = requests.get(super_job_url, headers=headers, params=params)
-        response.raise_for_status()
-        vacancies_found = response.json()['total']
-        count_pages = round(response.json()['total'] / 20)
-
         all_salaries = 0
         vacancies_processed = 1
 
-        for page in range(count_pages):
+        page = 0
+        count_pages = 1000
+
+        while page < count_pages:
             params['page'] = page
+            page += 1
             response = requests.get(super_job_url, headers=headers, params=params)
             response.raise_for_status()
 
             vacancies = response.json()['objects']
+            vacancies_found = response.json()['total']
+            count_pages = round(vacancies_found/20)
 
             for vacance in vacancies:
                 predicted_salary = predict_rub_salary_for_sj(vacance)
