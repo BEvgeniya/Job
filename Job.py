@@ -66,10 +66,11 @@ def parse_hh_vacancies(languages):
             page += 1
             response = requests.get(base_url, headers=headers, params=params)
             response.raise_for_status()
-            vacancies = response.json()['items']
-            vacancies_found = response.json()['found']
+            response = response.json()
+            vacancies = response['items']
+            vacancies_found = response['found']
 
-            count_pages = response.json()['pages']
+            count_pages = response['pages']
 
             for vacance in vacancies:
                 predicted_salary = predict_rub_salary_hh(vacance)
@@ -90,6 +91,7 @@ def parse_sj_vacancies(languages):
     catalogues_code = '48'
     town_code = '4'
     sj_api_token = os.getenv['SJ_API_TOKEN']
+   
 
     jobs = {}
     for language in languages:
@@ -119,9 +121,10 @@ def parse_sj_vacancies(languages):
             page += 1
             response = requests.get(super_job_url, headers=headers, params=params)
             response.raise_for_status()
+            response = response.json()
 
-            vacancies = response.json()['objects']
-            vacancies_found = response.json()['total']
+            vacancies = response['objects']
+            vacancies_found = response['total']
             count_pages = round(vacancies_found/20)
 
             for vacance in vacancies:
