@@ -10,9 +10,22 @@ Python3 должен быть уже установлен. Затем испол
 ```bash
 pip install -r requirements.txt
 ```
-А также потребуются токен SuperJob API, который можно получить,
- зарегистрировав свое приложение по [ссылке](https://api.superjob.ru/info/).
+#### Переменные окружения:
+- SJ_API_TOKEN
 
+
+SuperJob API Token можно получить,
+ зарегистрировав свое приложение по [ссылке](https://api.superjob.ru/info/).
+ 
+ ## Run
+
+Запускается на Linux(Python 3) или Windows:
+
+```bash
+
+ python job.py
+
+```
 
 ### Цель проекта
 
