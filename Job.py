@@ -38,6 +38,8 @@ def predict_rub_salary_for_sj(vacance):
 
 def parse_hh_vacancies(languages):
     base_url = 'https://api.hh.ru/vacancies'
+    specialization_code = '1.221'
+    area_code = '1'
     headers = {
         'User-Agent': 'curl',
     }
@@ -45,8 +47,8 @@ def parse_hh_vacancies(languages):
 
     for language in languages:
         params = {
-            'specialization': '1.221',
-            'area': '1',
+            'specialization': specialization_code,
+            'area': area_code,
             'period': '30',
             'text': language,
             'per_page': '100',
@@ -86,6 +88,8 @@ def parse_hh_vacancies(languages):
 
 
 def parse_sj_vacancies(languages):
+    catalogues_code = '48'
+    town_code =  '4'
     sj_api_token = os.getenv['SJ_API_TOKEN']
     jobs = {}
     for language in languages:
@@ -96,8 +100,8 @@ def parse_sj_vacancies(languages):
         }
 
         params = {
-            'catalogues': '48',
-            'town': '4',
+            'catalogues': catalogues_code,
+            'town': town_code,
             'published_all': 'True',
             'keyword': language,
             'page': '0'
