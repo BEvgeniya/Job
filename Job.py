@@ -55,9 +55,6 @@ def parse_hh_vacancies(languages):
             'page': '0'
 
         }
-        all_salaries = 0
-        vacancies_processed = 0
-
         page = 0
         count_pages = 1000
 
@@ -67,17 +64,9 @@ def parse_hh_vacancies(languages):
             response = requests.get(base_url, headers=headers, params=params)
             response.raise_for_status()
             response = response.json()
-            vacancies = response['items']
-            vacancies_found = response['found']
-
             count_pages = response['pages']
 
-            for vacance in vacancies:
-                predicted_salary = predict_rub_salary_hh(vacance)
-                if predicted_salary:
-                    vacancies_processed += 1
-                    all_salaries += predicted_salary
-            average_salary = int(all_salaries / (vacancies_processed if vacancies_processed else 1))
+            vacancies_found, vacancies_processed, average_salary = parse_language_hh(response)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -87,19 +76,36 @@ def parse_hh_vacancies(languages):
     return jobs
 
 
+def parse_language_hh(response):
+        is_hh = True
+        vacancies = response['items']
+        vacancies_found = response['found']
+        vacancies_processed, average_salary = get_average_salary(vacancies, is_hh)
+
+        return vacancies_found, vacancies_processed, average_salary
+
+
+def parse_language_sj(response):
+    is_hh = False
+    vacancies = response['objects']
+    vacancies_found = response['total']
+    vacancies_processed, average_salary = get_average_salary(vacancies, is_hh)
+
+    return vacancies_found, vacancies_processed, average_salary
+
+
 def parse_sj_vacancies(languages):
     catalogues_code = '48'
     town_code = '4'
-    sj_api_token = os.getenv['SJ_API_TOKEN']
-    
+    #sj_api_token = os.getenv['SJ_API_TOKEN']
+    sj_api_token = 'v3.r.13306754.e8a34219dab342767e97d052a2b95bcf439d0f50.48974001934ce626c8889b6ce795fe8d9bf4f1b3'
+    super_job_url = 'https://api.superjob.ru/2.0/vacancies'
+    headers = {
+        'X-Api-App-Id': sj_api_token,
+    }
 
     jobs = {}
     for language in languages:
-
-        super_job_url = 'https://api.superjob.ru/2.0/vacancies'
-        headers = {
-            'X-Api-App-Id': sj_api_token,
-        }
 
         params = {
             'catalogues': catalogues_code,
@@ -109,10 +115,6 @@ def parse_sj_vacancies(languages):
             'page': '0'
 
         }
-
-        all_salaries = 0
-        vacancies_processed = 0
-
         page = 0
         count_pages = 1000
 
@@ -123,16 +125,10 @@ def parse_sj_vacancies(languages):
             response.raise_for_status()
             response = response.json()
 
-            vacancies = response['objects']
-            vacancies_found = response['total']
+            vacancies_found, vacancies_processed, average_salary = parse_language_sj(response)
+
             count_pages = round(vacancies_found/20)
 
-            for vacance in vacancies:
-                predicted_salary = predict_rub_salary_for_sj(vacance)
-                if predicted_salary:
-                    vacancies_processed += 1
-                    all_salaries += predicted_salary
-                average_salary = int(all_salaries / (vacancies_processed if vacancies_processed else 1))
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -140,6 +136,21 @@ def parse_sj_vacancies(languages):
             'average_salary': average_salary
         }
     return jobs
+
+
+def get_average_salary(vacancies, is_hh):
+    vacancies_processed = 0
+    all_salaries = 0
+    for vacance in vacancies:
+        predicted_salary = predict_rub_salary_hh(vacance) if is_hh else predict_rub_salary_for_sj(vacance)
+        if predicted_salary:
+            vacancies_processed += 1
+            all_salaries += predicted_salary
+        average_salary = int(all_salaries / (vacancies_processed if vacancies_processed else 1))
+
+    return vacancies_processed, average_salary
+
+
 
 
 def create_table(jobs, title):
