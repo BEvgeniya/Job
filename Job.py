@@ -150,7 +150,7 @@ def get_average_salary(vacancies, function):
 
 
 def create_table(jobs, title):
-    titles = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
+    content = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
 
     for language, statistic in jobs.items():
         jobs_found = statistic['vacancies_found']
@@ -158,12 +158,11 @@ def create_table(jobs, title):
         salary = statistic['average_salary']
 
         content_hh = tuple([language, jobs_found, jobs_processed, salary])
-        table_data.append(content_hh)
+        content.append(content_hh)
 
-    table = AsciiTable(titles, title)
+    table = AsciiTable(content, title)
     table.justify_columns[len(jobs)] = 'right'
-    print(table.table)
-    print()
+    return table
 
 
 def main():
@@ -171,12 +170,17 @@ def main():
 
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
+
     sj_api_token = os.getenv['SJ_API_TOKEN']
     jobs = parse_hh_vacancies(languages)
-    create_table(jobs, title_hh)
+    table = create_table(jobs, title_hh)
+    print(table.table)
+    print()
 
     jobs = parse_sj_vacancies(languages, sj_api_token)
-    create_table(jobs, title_sj)
+    table = create_table(jobs, title_sj)
+    print(table.table)
+    print()
 
 
 if __name__ == '__main__':
