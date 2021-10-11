@@ -15,8 +15,8 @@ def predict_salary(s_from, s_to):
     return predicted_salary
 
 
-def hh_predict_rub_salary(vacance):
-    salary = vacance['salary']
+def hh_predict_rub_salary(vacancy):
+    salary = vacancy['salary']
     predicted_salary = None
     if salary and salary['currency'] == 'RUR':
         s_from = salary['from']
@@ -26,9 +26,9 @@ def hh_predict_rub_salary(vacance):
     return predicted_salary
 
 
-def sj_predict_rub_salary(vacance):
-    s_from = vacance['payment_from']
-    s_to = vacance['payment_to']
+def sj_predict_rub_salary(vacancy):
+    s_from = vacancy['payment_from']
+    s_to = vacancy['payment_to']
     return predict_salary(s_from, s_to)
 
 
@@ -139,8 +139,8 @@ def parse_sj_vacancies(languages, sj_api_token):
 def get_average_salary(vacancies, function):
     vacancies_processed = 0
     all_salaries = 0
-    for vacance in vacancies:
-        predicted_salary = function(vacance)
+    for vacancy in vacancies:
+        predicted_salary = function(vacancy)
         if predicted_salary:
             vacancies_processed += 1
             all_salaries += predicted_salary
@@ -172,7 +172,7 @@ def main():
     sj_title = 'SuperJob Moscow'
 
     sj_api_token = os.getenv['SJ_API_TOKEN']
-
+   
     jobs = parse_hh_vacancies(languages)
     table = create_table(jobs, hh_title)
     print(table.table)
