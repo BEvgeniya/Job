@@ -71,17 +71,17 @@ def parse_hh_vacancies(languages):
         jobs[language] = {
             'vacancies_found': vacancies_found,
             'vacancies_processed': total_vacancies_processed,
-            'average_salary': round(total_average_salary/page)
+            'average_salary': round(total_average_salary / page)
         }
     return jobs
 
 
 def parse_language_hh(response):
-        vacancies = response['items']
-        vacancies_found = response['found']
-        vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_hh)
+    vacancies = response['items']
+    vacancies_found = response['found']
+    vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_hh)
 
-        return vacancies_found, vacancies_processed, average_salary
+    return vacancies_found, vacancies_processed, average_salary
 
 
 def parse_language_sj(response):
@@ -126,14 +126,12 @@ def parse_sj_vacancies(languages, sj_api_token):
             total_vacancies_processed += vacancies_processed
             total_average_salary += average_salary
 
-
-            count_pages = round(vacancies_found/20)
-
+            count_pages = round(vacancies_found / 20)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
             'vacancies_processed': total_vacancies_processed,
-            'average_salary': round(total_average_salary/page)
+            'average_salary': round(total_average_salary / page)
         }
     return jobs
 
@@ -173,15 +171,12 @@ def main():
 
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-
     sj_api_token = os.getenv['SJ_API_TOKEN']
-   
     jobs = parse_hh_vacancies(languages)
     create_table(jobs, title_hh)
 
     jobs = parse_sj_vacancies(languages, sj_api_token)
     create_table(jobs, title_sj)
-
 
 
 if __name__ == '__main__':
