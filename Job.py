@@ -150,7 +150,7 @@ def get_average_salary(vacancies, function):
 
 
 def create_table(jobs, title):
-    table_data = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
+    titles = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
 
     for language, statistic in jobs.items():
         jobs_found = statistic['vacancies_found']
@@ -160,7 +160,7 @@ def create_table(jobs, title):
         content_hh = tuple([language, jobs_found, jobs_processed, salary])
         table_data.append(content_hh)
 
-    table = AsciiTable(table_data, title)
+    table = AsciiTable(titles, title)
     table.justify_columns[len(jobs)] = 'right'
     print(table.table)
     print()
