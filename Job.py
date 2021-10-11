@@ -15,7 +15,7 @@ def predict_salary(s_from, s_to):
     return predicted_salary
 
 
-def predict_rub_salary_hh(vacance):
+def hh_predict_rub_salary(vacance):
     salary = vacance['salary']
     predicted_salary = None
     if salary and salary['currency'] == 'RUR':
@@ -26,7 +26,7 @@ def predict_rub_salary_hh(vacance):
     return predicted_salary
 
 
-def predict_rub_salary_for_sj(vacance):
+def sj_predict_rub_salary(vacance):
     s_from = vacance['payment_from']
     s_to = vacance['payment_to']
     return predict_salary(s_from, s_to)
@@ -51,19 +51,19 @@ def parse_hh_vacancies(languages):
 
         }
         page = 0
-        count_pages = 1000
+        pages_count = 1000
         total_vacancies_processed = 0
         total_average_salary = 0
 
-        while page < count_pages:
+        while page < pages_count:
             params['page'] = page
             page += 1
             response = requests.get(base_url, headers=headers, params=params)
             response.raise_for_status()
             response = response.json()
-            count_pages = response['pages']
+            pages_count = response['pages']
 
-            vacancies_found, vacancies_processed, average_salary = parse_language_hh(response)
+            vacancies_found, vacancies_processed, average_salary = parse_hh_language(response)
 
             total_vacancies_processed += vacancies_processed
             total_average_salary += average_salary
@@ -76,18 +76,18 @@ def parse_hh_vacancies(languages):
     return jobs
 
 
-def parse_language_hh(response):
+def parse_hh_language(response):
     vacancies = response['items']
     vacancies_found = response['found']
-    vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_hh)
+    vacancies_processed, average_salary = get_average_salary(vacancies, hh_predict_rub_salary)
 
     return vacancies_found, vacancies_processed, average_salary
 
 
-def parse_language_sj(response):
+def parse_sj_language(response):
     vacancies = response['objects']
     vacancies_found = response['total']
-    vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_for_sj)
+    vacancies_processed, average_salary = get_average_salary(vacancies, sj_predict_rub_salary)
 
     return vacancies_found, vacancies_processed, average_salary
 
@@ -111,22 +111,22 @@ def parse_sj_vacancies(languages, sj_api_token):
 
         }
         page = 0
-        count_pages = 1000
+        pages_count = 1000
         total_vacancies_processed = 0
         total_average_salary = 0
 
-        while page < count_pages:
+        while page < pages_count:
             params['page'] = page
             page += 1
             response = requests.get(super_job_url, headers=headers, params=params)
             response.raise_for_status()
             response = response.json()
 
-            vacancies_found, vacancies_processed, average_salary = parse_language_sj(response)
+            vacancies_found, vacancies_processed, average_salary = parse_sj_language(response)
             total_vacancies_processed += vacancies_processed
             total_average_salary += average_salary
 
-            count_pages = round(vacancies_found / 20)
+            pages_count = round(vacancies_found / 20)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -168,17 +168,18 @@ def create_table(jobs, title):
 def main():
     languages = ['Java', 'Python', 'Javascript', 'PHP', 'C++', 'C#', 'C', 'Go', 'Swift']
 
-    title_hh = 'HeadHunter Moscow'
-    title_sj = 'SuperJob Moscow'
+    hh_title = 'HeadHunter Moscow'
+    sj_title = 'SuperJob Moscow'
 
     sj_api_token = os.getenv['SJ_API_TOKEN']
+
     jobs = parse_hh_vacancies(languages)
-    table = create_table(jobs, title_hh)
+    table = create_table(jobs, hh_title)
     print(table.table)
     print()
 
     jobs = parse_sj_vacancies(languages, sj_api_token)
-    table = create_table(jobs, title_sj)
+    table = create_table(jobs, sj_title)
     print(table.table)
     print()
 
