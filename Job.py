@@ -52,6 +52,8 @@ def parse_hh_vacancies(languages):
         }
         page = 0
         count_pages = 1000
+        total_vacancies_processed = 0
+        total_average_salary = 0
 
         while page < count_pages:
             params['page'] = page
@@ -63,10 +65,13 @@ def parse_hh_vacancies(languages):
 
             vacancies_found, vacancies_processed, average_salary = parse_language_hh(response)
 
+            total_vacancies_processed += vacancies_processed
+            total_average_salary += average_salary
+
         jobs[language] = {
             'vacancies_found': vacancies_found,
-            'vacancies_processed': vacancies_processed,
-            'average_salary': average_salary
+            'vacancies_processed': total_vacancies_processed,
+            'average_salary': round(total_average_salary/page)
         }
     return jobs
 
@@ -107,6 +112,8 @@ def parse_sj_vacancies(languages, sj_api_token):
         }
         page = 0
         count_pages = 1000
+        total_vacancies_processed = 0
+        total_average_salary = 0
 
         while page < count_pages:
             params['page'] = page
@@ -116,14 +123,17 @@ def parse_sj_vacancies(languages, sj_api_token):
             response = response.json()
 
             vacancies_found, vacancies_processed, average_salary = parse_language_sj(response)
+            total_vacancies_processed += vacancies_processed
+            total_average_salary += average_salary
+
 
             count_pages = round(vacancies_found/20)
 
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
-            'vacancies_processed': vacancies_processed,
-            'average_salary': average_salary
+            'vacancies_processed': total_vacancies_processed,
+            'average_salary': round(total_average_salary/page)
         }
     return jobs
 
@@ -163,9 +173,9 @@ def main():
 
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-    
+
     sj_api_token = os.getenv['SJ_API_TOKEN']
-        
+   
     jobs = parse_hh_vacancies(languages)
     create_table(jobs, title_hh)
 
