@@ -87,10 +87,9 @@ def parse_language_sj(response):
     return vacancies_found, vacancies_processed, average_salary
 
 
-def parse_sj_vacancies(languages):
+def parse_sj_vacancies(languages, sj_api_token):
     catalogues_code = '48'
     town_code = '4'
-    sj_api_token = os.getenv['SJ_API_TOKEN']
     super_job_url = 'https://api.superjob.ru/2.0/vacancies'
     headers = {
         'X-Api-App-Id': sj_api_token,
@@ -164,11 +163,13 @@ def main():
 
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-
+    
+    sj_api_token = os.getenv['SJ_API_TOKEN']
+        
     jobs = parse_hh_vacancies(languages)
     create_table(jobs, title_hh)
 
-    jobs = parse_sj_vacancies(languages)
+    jobs = parse_sj_vacancies(languages, sj_api_token)
     create_table(jobs, title_sj)
 
 
