@@ -29,10 +29,6 @@ def predict_rub_salary_hh(vacance):
 def predict_rub_salary_for_sj(vacance):
     s_from = vacance['payment_from']
     s_to = vacance['payment_to']
-    if not s_from:
-        s_from = None
-    if not s_to:
-        s_to = None
     return predict_salary(s_from, s_to)
 
 
@@ -52,7 +48,6 @@ def parse_hh_vacancies(languages):
             'period': '30',
             'text': language,
             'per_page': '100',
-            'page': '0'
 
         }
         page = 0
@@ -77,19 +72,17 @@ def parse_hh_vacancies(languages):
 
 
 def parse_language_hh(response):
-        is_hh = True
         vacancies = response['items']
         vacancies_found = response['found']
-        vacancies_processed, average_salary = get_average_salary(vacancies, is_hh)
+        vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_hh)
 
         return vacancies_found, vacancies_processed, average_salary
 
 
 def parse_language_sj(response):
-    is_hh = False
     vacancies = response['objects']
     vacancies_found = response['total']
-    vacancies_processed, average_salary = get_average_salary(vacancies, is_hh)
+    vacancies_processed, average_salary = get_average_salary(vacancies, predict_rub_salary_for_sj)
 
     return vacancies_found, vacancies_processed, average_salary
 
@@ -111,7 +104,6 @@ def parse_sj_vacancies(languages):
             'town': town_code,
             'published_all': 'True',
             'keyword': language,
-            'page': '0'
 
         }
         page = 0
@@ -128,6 +120,7 @@ def parse_sj_vacancies(languages):
 
             count_pages = round(vacancies_found/20)
 
+
         jobs[language] = {
             'vacancies_found': vacancies_found,
             'vacancies_processed': vacancies_processed,
@@ -136,11 +129,11 @@ def parse_sj_vacancies(languages):
     return jobs
 
 
-def get_average_salary(vacancies, is_hh):
+def get_average_salary(vacancies, function):
     vacancies_processed = 0
     all_salaries = 0
     for vacance in vacancies:
-        predicted_salary = predict_rub_salary_hh(vacance) if is_hh else predict_rub_salary_for_sj(vacance)
+        predicted_salary = function(vacance)
         if predicted_salary:
             vacancies_processed += 1
             all_salaries += predicted_salary
@@ -177,6 +170,7 @@ def main():
 
     jobs = parse_sj_vacancies(languages)
     create_table(jobs, title_sj)
+
 
 
 if __name__ == '__main__':
