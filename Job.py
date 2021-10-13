@@ -157,8 +157,8 @@ def create_table(jobs, title):
         jobs_processed = statistic['vacancies_processed']
         salary = statistic['average_salary']
 
-        content_hh = tuple([language, jobs_found, jobs_processed, salary])
-        content.append(content_hh)
+        content_jobs = [language, jobs_found, jobs_processed, salary]
+        content.append(content_jobs)
 
     table = AsciiTable(content, title)
     table.justify_columns[len(jobs)] = 'right'
