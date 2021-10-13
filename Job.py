@@ -83,7 +83,6 @@ def get_hh_language_stats(params):
 
 
 def parse_hh_vacancies(languages):
-   
     specialization_code = '1.221'
     area_code = '1'
     jobs = {}
@@ -185,9 +184,7 @@ def main():
 
     hh_title = 'HeadHunter Moscow'
     sj_title = 'SuperJob Moscow'
-
     sj_api_token = os.getenv['SJ_API_TOKEN']
-    
     jobs = parse_hh_vacancies(languages)
     table = create_table(jobs, hh_title)
     print(table.table)
