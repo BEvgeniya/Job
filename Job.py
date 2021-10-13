@@ -34,11 +34,11 @@ def sj_predict_rub_salary(vacancy):
 
 def get_sj_language_stats(params, super_job_url, headers):
     page = 0
-    pages_count = 1000
     total_vacancies_processed = 0
-    total_average_salary = 0
+    total_average_salary = 0  
+    have_more_pages = True
 
-    while page < pages_count:
+    while have_more_pages:
         params['page'] = page
         page += 1
         response = requests.get(super_job_url, headers=headers, params=params)
@@ -49,7 +49,7 @@ def get_sj_language_stats(params, super_job_url, headers):
         total_vacancies_processed += vacancies_processed
         total_average_salary += average_salary
 
-        pages_count = round(vacancies_found / 20)
+        have_more_pages = response['more']
 
     return vacancies_found, total_vacancies_processed, round(total_average_salary / page)
 
