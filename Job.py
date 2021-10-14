@@ -97,7 +97,8 @@ def parse_hh_vacancies(languages):
 
         }
 
-        vacancies_found, total_vacancies_processed, total_average_salary = get_hh_language_stats(params)
+        vacancies_found, total_vacancies_processed, total_average_salary\
+        = get_hh_language_stats(params)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -140,7 +141,8 @@ def parse_sj_vacancies(languages, sj_api_token):
 
         }
 
-        vacancies_found, total_vacancies_processed, total_average_salary = get_sj_language_stats(params, headers)
+        vacancies_found, total_vacancies_processed, total_average_salary\
+        = get_sj_language_stats(params, headers)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -164,7 +166,8 @@ def get_average_salary(vacancies, salary_function):
 
 
 def create_table(jobs, title):
-    content = [('Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'), ]
+    content = [('Язык программирования', 'Вакансий найдено', 
+                'Вакансий обработано', 'Средняя зарплата'), ]
 
     for language, statistic in jobs.items():
         jobs_found = statistic['vacancies_found']
