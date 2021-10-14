@@ -32,11 +32,20 @@ def sj_predict_rub_salary(vacancy):
     return predict_salary(s_from, s_to)
 
 
-def get_sj_language_stats(params, headers):
+def get_sj_language_stats(headers, language):
     super_job_url = 'https://api.superjob.ru/2.0/vacancies'
     page = 0
     total_vacancies_processed = 0
     total_average_salary = 0
+    catalogues_code = '48'
+    town_code = '4'
+
+    params = {
+        'catalogues': catalogues_code,
+        'town': town_code,
+        'published_all': 'True',
+        'keyword': language,
+    }
 
     have_more_pages = True
 
@@ -56,7 +65,7 @@ def get_sj_language_stats(params, headers):
     return vacancies_found, total_vacancies_processed, round(total_average_salary / page)
 
 
-def get_hh_language_stats(params):
+def get_hh_language_stats(language):
     base_url = 'https://api.hh.ru/vacancies'
     headers = {
         'User-Agent': 'curl',
@@ -65,6 +74,16 @@ def get_hh_language_stats(params):
     pages_count = 1000
     total_vacancies_processed = 0
     total_average_salary = 0
+    specialization_code = '1.221'
+    area_code = '1'
+    params = {
+        'specialization': specialization_code,
+        'area': area_code,
+        'period': '30',
+        'text': language,
+        'per_page': '100',
+
+    }
 
     while page < pages_count:
         params['page'] = page
@@ -83,22 +102,11 @@ def get_hh_language_stats(params):
 
 
 def parse_hh_vacancies(languages):
-    specialization_code = '1.221'
-    area_code = '1'
     jobs = {}
 
     for language in languages:
-        params = {
-            'specialization': specialization_code,
-            'area': area_code,
-            'period': '30',
-            'text': language,
-            'per_page': '100',
-
-        }
-
-        vacancies_found, total_vacancies_processed, total_average_salary\
-        = get_hh_language_stats(params)
+        vacancies_found, total_vacancies_processed, total_average_salary \
+            = get_hh_language_stats(language)
 
         jobs[language] = {
             'vacancies_found': vacancies_found,
@@ -128,27 +136,16 @@ def parse_sj_vacancies(languages, sj_api_token):
     headers = {
         'X-Api-App-Id': sj_api_token,
     }
-    catalogues_code = '48'
-    town_code = '4'
-
     jobs = {}
     for language in languages:
-        params = {
-            'catalogues': catalogues_code,
-            'town': town_code,
-            'published_all': 'True',
-            'keyword': language,
+        vacancies_found, total_vacancies_processed, total_average_salary \
+            = get_sj_language_stats(headers, language)
 
-        }
-
-        vacancies_found, total_vacancies_processed, total_average_salary\
-        = get_sj_language_stats(params, headers)
-
-        jobs[language] = {
-            'vacancies_found': vacancies_found,
-            'vacancies_processed': total_vacancies_processed,
-            'average_salary': total_average_salary
-        }
+    jobs[language] = {
+        'vacancies_found': vacancies_found,
+        'vacancies_processed': total_vacancies_processed,
+        'average_salary': total_average_salary
+    }
     return jobs
 
 
@@ -166,7 +163,7 @@ def get_average_salary(vacancies, salary_function):
 
 
 def create_table(jobs, title):
-    content = [('Язык программирования', 'Вакансий найдено', 
+    content = [('Язык программирования', 'Вакансий найдено',
                 'Вакансий обработано', 'Средняя зарплата'), ]
 
     for language, statistic in jobs.items():
