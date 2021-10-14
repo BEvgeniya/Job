@@ -150,11 +150,11 @@ def parse_sj_vacancies(languages, sj_api_token):
     return jobs
 
 
-def get_average_salary(vacancies, get_salary_function):
+def get_average_salary(vacancies, salary_function):
     vacancies_processed = 0
     all_salaries = 0
     for vacancy in vacancies:
-        predicted_salary = get_salary_function(vacancy)
+        predicted_salary = salary_function(vacancy)
         if predicted_salary:
             vacancies_processed += 1
             all_salaries += predicted_salary
